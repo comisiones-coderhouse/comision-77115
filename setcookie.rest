@@ -1,0 +1,13 @@
+GET http://localhost:3000/setcookie
+
+
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Set-Cookie: miCookie=Valor%20de%20mi%20cookie; Path=/
+Content-Type: text/html; charset=utf-8
+Content-Length: 14
+ETag: W/"e-DrwiovkLL3Kc7+/9UA+37ZApXXI"
+Date: Tue, 03 Mar 2026 23:36:45 GMT
+Connection: close
+
+Cookie seteada
