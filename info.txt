@@ -1,0 +1,18 @@
+https://www.npmjs.com/package/cookie-parser
+
+https://www.npmjs.com/package/express-session
+
+https://www.npmjs.com/package/connect-mongo
+
+https://mongoosejs.com/
+
+https://www.mongodb.com/try/download/shell
+
+https://www.mongodb.com/try/download/compass
+
+
+lo proximo :
+
+- gestion de usuarios (terminarl el signup)
+- hash y encriptacion de password
+- passport.js

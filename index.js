@@ -1,101 +1,77 @@
-//Imports
-import express from 'express'
-import cookieParser from 'cookie-parser';
-import session from 'express-session';
+import express from "express"
+import cookieParser from "cookie-parser"
+import session from "express-session"
+import MongoStore from "connect-mongo"
+import mongoose from "mongoose"
 
-//Constantes de configuracion
-const PORT = 4000;
+//init
+const PORT = 3000
+const app = express()
+const mongoStore = MongoStore.create({
+    //mongoUrl : "mongodb://localhost:27017",
+    mongoUrl: "mongodb://127.0.0.1:27017",
+    dbName: "demo-backend"
+})
 
-//El servidor
-const app = express();
+//MongoDB Models + Schemas
+//El schema seria el "validador" de los datos
+const userSchema = new mongoose.Schema()
+//El modelo seria el punto de entrada a las consultas a la DB
+const userModel = mongoose.model("User", userSchema)
 
-//Configuraciones del servidor
-//Vacio...
+//middleware : son funciones con la firma 
+//function middleware(req,res,next){}
+//app.use(middleware)
 
-//Middlewares
+//req.body
+app.use(express.json())
+
+//req.cookies
 app.use(cookieParser())
+
+//req.session
 app.use(session({
     secret: "123456",
-    //saveUninitialized : false,
-    //store
+    saveUninitialized: false,
+    resave: false,
+    store: mongoStore
 }))
 
 
-
-//Rutas
-
-//"Bienvenido undefined"
-
+//routes
 app.get("/", (req, res) => {
-
-    console.log(req.session.nombre)//undefined | "Horacio"
-
-    //console.log("🚀 ~ index.js:22 ~ req.cookies:", req.cookies) //{ nuevaCookie: 'test@mail.com' }
-
-    //TRUE o FALSE|0|undefined|null|""|NaN
-    //req.cookies
-    //{ nuevaCookie: 'test@mail.com' }
-    //{  }
-
-    if (req.cookies.nuevaCookie) {
-        res.send(`Bienvenido ${req.cookies.nuevaCookie}!`)
+    console.log("🚀 ~ index.js:11 ~ req:", req.cookies)
+    console.log(req.session)
+    if (req.session.usuario) {
+        res.send("Bienvenido " + req.session.usuario)
     } else {
-        res.send(`Por favor ingrese primero`)
+        res.send("Logueate!")
     }
-
-
-});
-
-app.get("/set-cookie", (req, res) => {
-
-    //Query Params
-    //console.log(req.query) // {email :"test@email.com"}
-
-    //res.setHeader("Set-Cookie","nuevaCookie=123456;")
-    //res.cookie('nuevaCookie', '123456')
-    res.cookie('nuevaCookie', req.query.email)
-
-    res.send("Se envio la cookie")
 })
 
-app.get("/session", (req,res) => {
-    //Por afectar el objeto session
-    req.session.nombre = "Horacio"
-    res.send("session creada!")
+app.get("/login", (req, res) => {
+    req.session.usuario = "horacio"
+    res.send("Login exitoso!")
 })
 
-//Puertos + Conexion a DB
-app.listen(PORT, () => console.log(`Servidor corriendo en http://localhost:${PORT}`))
+app.post("/signup", (req, res) => {
+    console.log(req.body)
+    res.send("Usuario creado!")
+})
 
 
-/* 
+//start
+console.log(`Conectando a DB....`)
+mongoose.connect("mongodb://127.0.0.1:27017/demo-backend")
+    .then(() => {
 
-HTTP Protocol
+        console.log(`Conectado a DB!`)
 
-Request (client)
-Mehod URL/IP httpVersion
-Headers
-Body
+        app.listen(PORT, () => {
+            console.log(`Servidor Web corriendo en puero ${PORT}!`)
+        })
 
-Response (server)
-httpVersion statusCode statusMessage
-Headers
-Body
-
-
-https://www.google.com/search?
-
-Query String/ MIME-Type : x-www-application/form
-
-q=rick+y+morty &
-sca_esv=95fd351cc3e058c0 & 
-sxsrf=ANbL-n4AHPorHcF0HpSkAFY5mJGJhsDyDA%3A1773183155032 & 
-source=hp & 
-ei=sqCwaYmqPLHY1sQPp9OEmA4 & 
-iflsig=AFdpzrgAAAAAabCuw3UcDI04k7GSJrcpTYy_AAbKHkTW&ved=0ahUKEwiJy8yAtpaTAxUxrJUCHacpAeMQ4dUDCCE & 
-uact=5 & 
-oq=rick+y+morty & 
-gs_lp=Egdnd3Mtd2l6IgxyaWNrIHkgbW9ydHkyChAjGIAEGCcYigUyCBAuGIAEGMsBMggQABiABBjLATIIEAAYgAQYywEyCBAAGIAEGMsBMggQABiABBjLATIIEAAYgAQYywEyCBAAGIAEGMsBMggQABiABBjLATIIEAAYgAQYywFIhAtQAFjoCXAAeACQAQCYAaMBoAHyCqoBBDIuMTC4AQPIAQD4AQGYAgygApcLwgILEAAYgAQYkQIYigXCAggQABiABBixA8ICDhAuGIAEGLEDGIMBGIoFwgILEAAYgAQYsQMYgwHCAggQLhiABBixA8ICDhAAGIAEGLEDGIoFGI0GwgIEECMYJ8ICCxAuGIAEGLEDGIMBwgIOEAAYgAQYsQMYgwEYigXCAgUQABiABMICBRAuGIAEwgIIEC4YgAQY5QSYAwCSBwQyLjEwoAfulwGyBwQyLjEwuAeXC8IHBTAuOC40yAcggAgA & 
-sclient=gws-wiz
-
-*/
+    })
+    .catch(() => {
+        console.log("Hubo un error con la DB")
+    })

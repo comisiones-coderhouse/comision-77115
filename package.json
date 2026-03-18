@@ -1,17 +1,28 @@
 {
   "name": "comision-backend-77115",
   "version": "1.0.0",
-  "description": "Proyecto demo del curso de backend de Coderhouse para la comision 77115",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "dev": "node --watch index.js"
   },
-  "author": "Horacio Gutierrez",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/comisiones-coderhouse/comision-77115.git"
+  },
+  "keywords": [],
+  "author": "",
   "license": "ISC",
   "type": "module",
+  "bugs": {
+    "url": "https://github.com/comisiones-coderhouse/comision-77115/issues"
+  },
+  "homepage": "https://github.com/comisiones-coderhouse/comision-77115#readme",
   "dependencies": {
+    "connect-mongo": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "express": "^5.2.1",
-    "express-session": "^1.19.0"
+    "express-session": "^1.19.0",
+    "mongoose": "^9.3.1"
   }
 }
