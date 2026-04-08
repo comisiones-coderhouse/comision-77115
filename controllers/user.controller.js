@@ -1,4 +1,5 @@
 const getLandingController = (req, res) => {
+    console.log(req.session)
     if (req.session.usuario) {
         res.send("Bienvenido " + req.session.usuario)
     } else {

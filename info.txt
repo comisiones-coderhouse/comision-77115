@@ -10,9 +10,13 @@ https://www.mongodb.com/try/download/shell
 
 https://www.mongodb.com/try/download/compass
 
+https://www.npmjs.com/package/yup
+
+https://www.npmjs.com/package/bcrypt
 
 lo proximo :
 
 - gestion de usuarios (terminarl el signup)
 - hash y encriptacion de password
+- jwt
 - passport.js

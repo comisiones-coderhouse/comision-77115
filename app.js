@@ -11,7 +11,7 @@ const app = express()
 const mongoStore = MongoStore.create({
     //mongoUrl : "mongodb://localhost:27017",
     mongoUrl: "mongodb://127.0.0.1:27017",
-    dbName: "demo-backend"
+    dbName: "demo-backend",
 })
 
 //Middlewares
