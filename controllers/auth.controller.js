@@ -1,6 +1,7 @@
 import validator from "validator"
 import userModel from "../models/user.model.js"
 import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken"
 
 //ruta -> validacion -> controller
 
@@ -25,8 +26,12 @@ const loginController = async (req, res) => {
 
         await bcrypt.compare(password, dbPassword)
 
-        req.session.usuario = "horacio"
-        res.send("Login exitoso!")
+        //req.session.usuario = "horacio"
+        const token = jwt.sign({ email: findUser.email, id: findUser._id }, "secret-key")
+
+        //res.setHeader("////", token)
+        res.cookie("jwt",token)
+        res.send(token)
 
     } catch (err) {
         //401 : Anauthorized 
