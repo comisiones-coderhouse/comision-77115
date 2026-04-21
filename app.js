@@ -1,51 +1,81 @@
 import express from "express"
 import cookieParser from "cookie-parser"
-/* import session from "express-session"
-import MongoStore from "connect-mongo" */
+import jwt from "jsonwebtoken"
+import bcrypt from "bcrypt"
+import validator from "validator"
+//var passport = require('passport');
+//var LocalStrategy = require('passport-local');
+import passport from "passport"
+import LocalStrategy from "passport-local"
 
 import userRouter from "./routes/user.routes.js"
 import authRouter from "./routes/auth.routes.js"
+import userModel from "./models/user.model.js"
+import AuthError from "./errors/AuthError.js"
+import session from "express-session"
 
-/* import jwt from "jsonwebtoken" */
 
-//const mi_token = jwt.sign({ email: "test@test.com" }, "secret-key")
-/* function validar() {
-    try {
-        const valida = jwt.verify("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJpYXQiOjE3NzYyMDUzMDd8.Yf2VZNswPWWlfLQ5PPvX57lolkY0z4fxvBsy3z5VBdg", "secret-key")
-        console.log("🚀 ~ app.js:13 ~ mi_token:", valida)
-    } catch (err) {
-        console.log("Soy un lindo error")
-    }
-}
-
-validar() */
-
-//Inincializacion
+//Init
 const app = express()
-/* const mongoStore = MongoStore.create({
-    mongoUrl: "mongodb://127.0.0.1:27017",
-    dbName: "demo-backend",
-}) */
 
-//JWT : Json Web Token
+
+const localStrategy = new LocalStrategy(async (username, password, cb) => {
+    console.log("Paso por local strategy")
+    console.log("🚀 ~ app.js:18 ~ username:", username)
+    console.log("🚀 ~ app.js:18 ~ password:", password)
+
+    try {
+
+        const email = username
+        const pass = password
+
+        const isEmailValid = validator.isEmail(email)
+
+        if (!isEmailValid) {
+            return cb(null, false, { message: 'Invalid Email' });
+        }
+
+        const [findUser] = await userModel.find({ email: email })
+        const dbPassword = findUser.password
+
+        await bcrypt.compare(pass, dbPassword)
+
+        //const token = jwt.sign({ email: findUser.email, id: findUser._id }, "secret-key")
+        //res.cookie("jwt", token)
+
+        //res.send(token)
+        return cb(null, findUser)
+    } catch (err) {
+        const custom_error = new AuthError(err.message || "No Autorizado")
+        //next(custom_error)
+        return cb(custom_error)
+    }
+})
+
+
 
 //Middlewares
 app.use(express.json())
 app.use(cookieParser())
-/* app.use(session({
+app.use(session({
     secret: "123456",
     saveUninitialized: false,
     resave: false,
-    store: mongoStore
-})) */
+    /* store: mongoStore */
+}))
+passport.use(localStrategy)
 
-
+//Routes
 app.use(userRouter)
 app.use(authRouter)
 
-app.use((error, req, res, next) => {
-    //console.log(error)
-    res.status(500).send("Hubo un error general")
+
+//Error handler
+app.use((error, _req, res, _next) => {
+
+    console.log("🚀 ~ app.js:38 ~ error:", error)
+
+    res.status(error.code || 500).send(error.message || "Hubo un error general")
 })
 
 export default app

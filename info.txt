@@ -14,9 +14,12 @@ https://www.npmjs.com/package/yup
 
 https://www.npmjs.com/package/bcrypt
 
+https://www.passportjs.org/tutorials/password/session/
+
 lo proximo :
 
 - gestion de usuarios (terminarl el signup)
-- hash y encriptacion de password
-- jwt
-- passport.js
+- hash y encriptacion de password (ya esta)
+- jwt (ya esta)
+- passport.js (a medio hacer)
+- documentacion swagger

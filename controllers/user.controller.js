@@ -12,7 +12,6 @@ const getLandingController = (req, res,next) => {
             res.send("Logueate!")
         }
     } catch (err) {
-        //res.status(500).send("Hubo un error 2")//500
         next(err)
     }
 }
