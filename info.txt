@@ -18,8 +18,6 @@ https://www.passportjs.org/tutorials/password/session/
 
 lo proximo :
 
-- gestion de usuarios (terminarl el signup)
-- hash y encriptacion de password (ya esta)
-- jwt (ya esta)
-- passport.js (a medio hacer)
-- documentacion swagger
+- terminar sin errores
+- env
+- documentacion swagger*

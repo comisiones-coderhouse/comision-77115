@@ -1,28 +1,13 @@
 import validator from "validator"
-import userModel from "../models/user.model.js"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
+
 import AuthError from "../errors/AuthError.js"
+import UserDAO from "../dao/user.dao.js"
 
-const loginController = async (req, res,next) => {
-
+const loginController = async (req, res, next) => {
     try {
-
-        const email = req.body.email
-        const password = req.body.password
-
-        const isEmailValid = validator.isEmail(email)
-
-        if (!isEmailValid) {
-            return res.status(400).send("Email o Contraseña invalidos")//200
-        }
-
-        const [findUser] = await userModel.find({ email: email })
-        const dbPassword = findUser.password
-
-        await bcrypt.compare(password, dbPassword)
-
-        const token = jwt.sign({ email: findUser.email, id: findUser._id }, "secret-key")
+        const token = jwt.sign({ email: req.user.email, id: req.user._id }, "secret-key")
 
         res.cookie("jwt", token)
         res.send(token)
@@ -45,11 +30,11 @@ const signupController = async (req, res) => {
         res.status(400).send("Email o Contraseña invalidos")//200
     } else {
         try {
+
             const data = await bcrypt.hash(password, 10)
-            const newUser = await userModel.create({
-                email,
-                password: data
-            })
+
+            const newUser = await UserDAO.createUser(email, data)
+
             res.status(201).send(newUser)
         } catch (err) {
             return res.status(500).send("Hubo un error generando el hash")

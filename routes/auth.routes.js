@@ -5,9 +5,8 @@ import { loginController, signupController } from "../controllers/auth.controlle
 
 const router = Router()
 
-router.post("/login", passport.authenticate('local',{
-     successRedirect: '/'
-})/* , loginController */)
+
+router.post("/login", passport.authenticate('local', { session: true }), loginController)
 router.post("/signup", signupController)
 
 export default router

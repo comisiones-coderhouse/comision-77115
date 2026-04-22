@@ -1,73 +1,57 @@
 import express from "express"
-import cookieParser from "cookie-parser"
-import jwt from "jsonwebtoken"
-import bcrypt from "bcrypt"
-import validator from "validator"
-//var passport = require('passport');
-//var LocalStrategy = require('passport-local');
 import passport from "passport"
-import LocalStrategy from "passport-local"
 
+import session from "express-session"
 import userRouter from "./routes/user.routes.js"
 import authRouter from "./routes/auth.routes.js"
-import userModel from "./models/user.model.js"
 import AuthError from "./errors/AuthError.js"
-import session from "express-session"
-
+import localStrategy from "./strategies/local.strategy.js"
+import githubStrategy from "./strategies/github.strategy.js"
+import cookieParserMiddleware from "./middlewares/cookie-parser.middleware.js"
+import jsonBodyMiddleware from "./middlewares/json-body.middleware.js"
+import sessionMiddleware from "./middlewares/session.middleware.js"
 
 //Init
 const app = express()
 
+//Middlewares
+app.use(jsonBodyMiddleware)
+app.use(cookieParserMiddleware)
+app.use(sessionMiddleware)
 
-const localStrategy = new LocalStrategy(async (username, password, cb) => {
-    console.log("Paso por local strategy")
-    console.log("🚀 ~ app.js:18 ~ username:", username)
-    console.log("🚀 ~ app.js:18 ~ password:", password)
+app.use(passport.authenticate('session'));
+passport.use(githubStrategy)
+passport.use(localStrategy)
 
-    try {
+//en serializeUser el primer parametro "user" viene de lo que te da la estrategia (findUser)
+passport.serializeUser((user, done) => {
 
-        const email = username
-        const pass = password
+    console.log("🚀 ~ app.js:26 ~ user:", user)
 
-        const isEmailValid = validator.isEmail(email)
-
-        if (!isEmailValid) {
-            return cb(null, false, { message: 'Invalid Email' });
-        }
-
-        const [findUser] = await userModel.find({ email: email })
-        const dbPassword = findUser.password
-
-        await bcrypt.compare(pass, dbPassword)
-
-        //const token = jwt.sign({ email: findUser.email, id: findUser._id }, "secret-key")
-        //res.cookie("jwt", token)
-
-        //res.send(token)
-        return cb(null, findUser)
-    } catch (err) {
-        const custom_error = new AuthError(err.message || "No Autorizado")
-        //next(custom_error)
-        return cb(custom_error)
-    }
+    //req.session.userId = user._id
+    done(null, user._id)
 })
 
+//en deserializeUser el primer parametro "id" viene de lo que se guardó en serializeUser (user._id)
+passport.deserializeUser((id, done) => {
+    console.log("deserializeUser", id)
+    done(null, { id })
+})
 
-
-//Middlewares
-app.use(express.json())
-app.use(cookieParser())
-app.use(session({
-    secret: "123456",
-    saveUninitialized: false,
-    resave: false,
-    /* store: mongoStore */
-}))
-passport.use(localStrategy)
 
 //Routes
 app.use(userRouter)
 app.use(authRouter)
+
+app.get('/auth/github',
+    passport.authenticate('github'));
+
+app.get('/auth/github/callback',
+    passport.authenticate('github', { failureRedirect: '/login' }),
+    function (req, res) {
+        // Successful authentication, redirect home.
+        res.redirect('/');
+    });
 
 
 //Error handler
