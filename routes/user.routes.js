@@ -1,9 +1,12 @@
-import { Router } from "express"
-import { getLandingController, getUserController } from "../controllers/user.controller.js"
+import { Router } from "express";
+import {
+  getLandingController,
+  getUserController,
+} from "../controllers/user.controller.js";
 
-const router = Router()
+const router = Router();
 
-router.get("/", getLandingController)
-router.get("/user", getUserController)
+router.get("/", getLandingController);
+router.get("/user", getUserController);
 
-export default router
+export default router;

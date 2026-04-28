@@ -18,6 +18,9 @@ https://www.passportjs.org/tutorials/password/session/
 
 lo proximo :
 
-- terminar sin errores
 - env
+- nomeclatura/convencion de paths para REST APIs
+
+- expiracion de cookies y tokens *
+- terminar sin errores
 - documentacion swagger*
